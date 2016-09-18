@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">BookListing</string>
     <string name="search_button">Search</string>
+    <string name="error_no_books">No books found. Try a different word or phrase</string>
+    <string name="error_button">Search Again</string>
+    <string name="search_again">Search Again</string>
 </resources>

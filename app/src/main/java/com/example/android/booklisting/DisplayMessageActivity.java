@@ -3,6 +3,7 @@ package com.example.android.booklisting;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 public class DisplayMessageActivity extends AppCompatActivity {
@@ -18,6 +19,13 @@ public class DisplayMessageActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.error_message);
         textView.setText(message);
 
+
+    }
+
+    public void returnSearch(View view) {
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
 
     }
 }

@@ -62,7 +62,7 @@ public class BookListing extends AppCompatActivity {
 
         if (books.size() <= 0) {
 
-            String message =  "No books found. Try a different word or phrase";
+            String message = getString(R.string.error_no_books);
             Intent intent = new Intent(this, DisplayMessageActivity.class);
             intent.putExtra(EXCEPTION_MESSAGE, message);
             startActivity(intent);
@@ -196,13 +196,23 @@ public class BookListing extends AppCompatActivity {
          */
         private ArrayList<Book> extractFeatureFromJson(String bookJSON) {
             try {
+                // Create an array where to store the results
+                ArrayList<Book> bookList = new ArrayList<Book>();
+
                 JSONObject baseJsonResponse = new JSONObject(bookJSON);
-                JSONArray featureArray = baseJsonResponse.getJSONArray("items");
+                JSONArray featureArray;
+                // Check if there are any books found
+                if (baseJsonResponse.has("items")){
+                    featureArray = baseJsonResponse.getJSONArray("items");
+                } else {
+
+                    return bookList;
+
+                }
 
                 // If there are results in the features array
                 if (featureArray.length() > 0) {
-                    // Create an array where to store the results
-                    ArrayList<Book> bookList = new ArrayList<Book>();
+
                     // Iterate over the results
                     for (int i = 0; i < featureArray.length(); i++) {
 
