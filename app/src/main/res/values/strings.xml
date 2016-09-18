@@ -4,4 +4,5 @@
     <string name="error_no_books">No books found. Try a different word or phrase</string>
     <string name="error_button">Search Again</string>
     <string name="search_again">Search Again</string>
+    <string name="error_internet_connection">No internet connection. Check your connection and try again</string>
 </resources>

@@ -1,6 +1,9 @@
 package com.example.android.booklisting;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -49,8 +52,21 @@ public class BookListing extends AppCompatActivity {
 
         Log.v("URLSEARCH",GOOGLE_BOOKS_API);
 
-        BookListingAsyncTask task = new BookListingAsyncTask();
-        task.execute();
+        if (checkInternetConnection()) {
+
+            BookListingAsyncTask task = new BookListingAsyncTask();
+            task.execute();
+
+        } else {
+
+            Intent intent1 = new Intent(this,DisplayMessageActivity.class);
+            intent1.putExtra(EXCEPTION_MESSAGE,getString(R.string.error_internet_connection));
+            startActivity(intent1);
+
+
+        }
+
+
 
     }
 
@@ -250,4 +266,22 @@ public class BookListing extends AppCompatActivity {
         return formatedString;
 
     }
+
+    // Check if there is an internet conection
+    private boolean checkInternetConnection() {
+
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+
+        return isConnected;
+
+
+    }
+
+
 }
