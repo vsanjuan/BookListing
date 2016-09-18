@@ -30,7 +30,11 @@ public class BookListing extends AppCompatActivity {
     /** Tag for the log messages */
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
 
-    public static final String API_KEY = "AIzaSyDa513lfqgdeMYV5zLLnH5MYXc9g4wXoXs";
+   /** API KEY to access the Google Books API from the app*/
+    private static final String API_KEY = "AIzaSyDa513lfqgdeMYV5zLLnH5MYXc9g4wXoXs";
+
+    /** Message for the queries with empty response */
+    public static final String EXCEPTION_MESSAGE = "ExceptionMessage";
 
 
     @Override
@@ -40,14 +44,7 @@ public class BookListing extends AppCompatActivity {
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.SEARCH_STRING);
-        
-/*        TextView textView = new TextView(this);
-        textView.setTextSize(40);
-        textView.setText(message);
 
-        LinearLayout layout = (LinearLayout) findViewById(R.id.book_listing);
-        layout.addView(textView);*/
-        
         GOOGLE_BOOKS_API = GOOGLE_BOOKS_API + message + "&key=" + API_KEY ;
         // GOOGLE_BOOKS_API + message + "&maxResults=1&key=" + API_KEY ;
 
@@ -62,10 +59,18 @@ public class BookListing extends AppCompatActivity {
      * Update the screen to display information from the given {@link Book}.
      */
     private void updateUi(ArrayList<Book> books) {
-        // Display the book title in the UI
-//        TextView titleTextView = (TextView) findViewById(R.id.title);
-//        titleTextView.setText(book.getMtitle());
 
+        if (books.size() <= 0) {
+
+            String message =  "No books found. Try a different word or phrase";
+            Intent intent = new Intent(this, DisplayMessageActivity.class);
+            intent.putExtra(EXCEPTION_MESSAGE, message);
+            startActivity(intent);
+
+        }
+
+
+        // Display the book title in the UI
         BookAdapter adapter = new BookAdapter(this,books);
         ListView listView = (ListView) findViewById(R.id.book_list);
 
@@ -95,6 +100,8 @@ public class BookListing extends AppCompatActivity {
             // Extract relevant fields from the JSON response and create an {@link Event} object
             ArrayList<Book> book = extractFeatureFromJson(jsonResponse);
 
+
+
             // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
             return book;
         }
@@ -102,7 +109,7 @@ public class BookListing extends AppCompatActivity {
         private URL createUrl(String stringUrl) {
             URL url = null;
             try {
-                url = new URL(stringUrl);
+                url = new URL(formUrlString(stringUrl));
             } catch (MalformedURLException exception) {
                 Log.e(LOG_TAG, "Error with creating URL", exception);
                 return null;
@@ -203,10 +210,39 @@ public class BookListing extends AppCompatActivity {
                         JSONObject firstFeature = featureArray.getJSONObject(i);
                         JSONObject volumeInfo = firstFeature.getJSONObject("volumeInfo");
 
-                        // Extract out the title, time, and tsunami values
-                        String title = volumeInfo.getString("title");
+                        // Log.v("Bookscounter", Integer.toString(i));
 
-                        bookList.add(new Book(title));
+                        // Extract out the title
+                        String title = volumeInfo.getString("title");
+                        if (volumeInfo.has("subtitle")){
+                            title = title + ". " + volumeInfo.getString("subtitle");
+                        }
+                        // Log.v("Title",title);
+
+                        // Extract out the authors
+                        ArrayList<String> authorsList = new ArrayList<String>();
+
+                        if (volumeInfo.has("authors")){
+
+                            JSONArray authors = volumeInfo.getJSONArray("authors");
+                            authorsList.add(authors.getString(0));
+
+                        } else {
+
+                            authorsList.add("No author mentioned");
+
+                        }
+
+
+/*                        for(int j=0; i< authors.length(); i++) {
+
+
+                            authorsList.add(authors.getString(j));
+                            Log.v("Auhtorcounter",Integer.toString(j));
+                            Log.v("Authorlist",authors.getString(j));
+                        }*/
+
+                        bookList.add(new Book(title,authorsList));
 
                     }
 
@@ -218,6 +254,15 @@ public class BookListing extends AppCompatActivity {
             }
             return null;
         }
+
+    }
+
+    // Reviews the string to give the right format for the query
+    private String formUrlString(String string) {
+
+        String formatedString = string.replaceAll(" ", "+");
+
+        return formatedString;
 
     }
 }

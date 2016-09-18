@@ -1,22 +1,32 @@
 package com.example.android.booklisting;
 
+import java.util.ArrayList;
+
 /**
  * Created by Salvador on 17/09/2016.
  */
 public class Book {
 
     private String mtitle;
-    private String[] mauthors;
-    private String [] mcategories;
+    private ArrayList<String> mauthors;
+    private ArrayList<String> mcategories;
     private String mpublisher;
 
 
-    public Book( String title, String[] authors, String[] categories, String publisher ) {
+    public Book(String title, ArrayList<String> authors, ArrayList<String> categories, String publisher ) {
 
         mtitle = title;
         mauthors = authors;
         mcategories = categories;
         mpublisher = publisher;
+
+    }
+
+    public Book(String title, ArrayList<String> authors ) {
+
+        mtitle = title;
+        mauthors = authors;
+
 
     }
 
@@ -30,12 +40,12 @@ public class Book {
         return mtitle;
     }
 
-    public String[] getMauthors() {
+    public ArrayList<String> getMauthors() {
 
         return  mauthors;
     }
 
-    public String[] getMcategories() {
+    public ArrayList<String> getMcategories() {
         return mcategories;
     }
 
