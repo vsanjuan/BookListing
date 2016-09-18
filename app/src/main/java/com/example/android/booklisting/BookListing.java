@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -19,6 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 
 public class BookListing extends AppCompatActivity {
 
@@ -35,7 +36,7 @@ public class BookListing extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_book_listing);
+        setContentView(R.layout.books);
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(MainActivity.SEARCH_STRING);
@@ -60,18 +61,23 @@ public class BookListing extends AppCompatActivity {
     /**
      * Update the screen to display information from the given {@link Book}.
      */
-    private void updateUi(Book book) {
+    private void updateUi(ArrayList<Book> books) {
         // Display the book title in the UI
-        TextView titleTextView = (TextView) findViewById(R.id.title);
-        titleTextView.setText(book.getMtitle());
+//        TextView titleTextView = (TextView) findViewById(R.id.title);
+//        titleTextView.setText(book.getMtitle());
+
+        BookAdapter adapter = new BookAdapter(this,books);
+        ListView listView = (ListView) findViewById(R.id.book_list);
+
+        listView.setAdapter(adapter);
 
 
     }
 
-    private class BookListingAsyncTask extends AsyncTask<URL,Void, Book> {
+    private class BookListingAsyncTask extends AsyncTask<URL,Void, ArrayList<Book>> {
 
         @Override
-        protected Book doInBackground(URL... urls) {
+        protected ArrayList<Book> doInBackground(URL... urls) {
             // Create URL object
             URL url = createUrl(GOOGLE_BOOKS_API);
 
@@ -87,7 +93,7 @@ public class BookListing extends AppCompatActivity {
             }
 
             // Extract relevant fields from the JSON response and create an {@link Event} object
-            Book book = extractFeatureFromJson(jsonResponse);
+            ArrayList<Book> book = extractFeatureFromJson(jsonResponse);
 
             // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
             return book;
@@ -151,7 +157,7 @@ public class BookListing extends AppCompatActivity {
          * {@link BookListingAsyncTask}).
          */
         @Override
-        protected void onPostExecute(Book book) {
+        protected void onPostExecute(ArrayList<Book> book) {
             if (book == null) {
                 return;
             }
@@ -181,22 +187,31 @@ public class BookListing extends AppCompatActivity {
          * Return an {@link Book} object by parsing out information
          * about the first book from the input bookJSON string.
          */
-        private Book extractFeatureFromJson(String bookJSON) {
+        private ArrayList<Book> extractFeatureFromJson(String bookJSON) {
             try {
                 JSONObject baseJsonResponse = new JSONObject(bookJSON);
                 JSONArray featureArray = baseJsonResponse.getJSONArray("items");
 
                 // If there are results in the features array
                 if (featureArray.length() > 0) {
-                    // Extract out the first feature (which is an book)
-                    JSONObject firstFeature = featureArray.getJSONObject(0);
-                    JSONObject volumeInfo = firstFeature.getJSONObject("volumeInfo");
+                    // Create an array where to store the results
+                    ArrayList<Book> bookList = new ArrayList<Book>();
+                    // Iterate over the results
+                    for (int i = 0; i < featureArray.length(); i++) {
 
-                    // Extract out the title, time, and tsunami values
-                    String title = volumeInfo.getString("title");
+                        // Extract out the first feature (which is an book)
+                        JSONObject firstFeature = featureArray.getJSONObject(i);
+                        JSONObject volumeInfo = firstFeature.getJSONObject("volumeInfo");
 
-                    // Create a new {@link Event} object
-                    return new Book(title);
+                        // Extract out the title, time, and tsunami values
+                        String title = volumeInfo.getString("title");
+
+                        bookList.add(new Book(title));
+
+                    }
+
+                    // Create a new {@link Book} object
+                    return bookList;
                 }
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "Problem parsing the book JSON results", e);
