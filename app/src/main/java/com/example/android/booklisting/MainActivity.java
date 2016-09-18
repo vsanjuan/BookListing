@@ -15,24 +15,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-/*        final Button button = (Button) findViewById(R.id.search_button);
-
-
-        button.setOnClickListener(new View.OnClickListener(){
-
-            public void onClick(View v) {
-
-                EditText editText = (EditText) findViewById(R.id.search_string);
-                String searchString =  editText.getText().toString();
-                Intent intent = new Intent(this, BookListing.class);
-                intent.putExtra("search_string", searchString);
-
-
-
-            }
-        });
-        */
-
     }
 
     public void searchString(View view) {

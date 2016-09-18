@@ -46,7 +46,6 @@ public class BookListing extends AppCompatActivity {
         String message = intent.getStringExtra(MainActivity.SEARCH_STRING);
 
         GOOGLE_BOOKS_API = GOOGLE_BOOKS_API + message + "&key=" + API_KEY ;
-        // GOOGLE_BOOKS_API + message + "&maxResults=1&key=" + API_KEY ;
 
         Log.v("URLSEARCH",GOOGLE_BOOKS_API);
 
@@ -69,13 +68,11 @@ public class BookListing extends AppCompatActivity {
 
         }
 
-
         // Display the book title in the UI
         BookAdapter adapter = new BookAdapter(this,books);
         ListView listView = (ListView) findViewById(R.id.book_list);
 
         listView.setAdapter(adapter);
-
 
     }
 
@@ -85,7 +82,6 @@ public class BookListing extends AppCompatActivity {
         protected ArrayList<Book> doInBackground(URL... urls) {
             // Create URL object
             URL url = createUrl(GOOGLE_BOOKS_API);
-
 
             // Perform HTTP request to the URL and receive a JSON response back
             String jsonResponse = "";
@@ -98,12 +94,10 @@ public class BookListing extends AppCompatActivity {
             }
 
             // Extract relevant fields from the JSON response and create an {@link Event} object
-            ArrayList<Book> book = extractFeatureFromJson(jsonResponse);
-
-
+            ArrayList<Book> books = extractFeatureFromJson(jsonResponse);
 
             // Return the {@link Event} object as the result fo the {@link TsunamiAsyncTask}
-            return book;
+            return books;
         }
 
         private URL createUrl(String stringUrl) {
@@ -140,7 +134,6 @@ public class BookListing extends AppCompatActivity {
 
                     jsonResponse = "";
                 }
-
 
             } catch (IOException e) {
 
@@ -209,7 +202,6 @@ public class BookListing extends AppCompatActivity {
                     return bookList;
 
                 }
-
                 // If there are results in the features array
                 if (featureArray.length() > 0) {
 
@@ -220,14 +212,11 @@ public class BookListing extends AppCompatActivity {
                         JSONObject firstFeature = featureArray.getJSONObject(i);
                         JSONObject volumeInfo = firstFeature.getJSONObject("volumeInfo");
 
-                        // Log.v("Bookscounter", Integer.toString(i));
-
                         // Extract out the title
                         String title = volumeInfo.getString("title");
                         if (volumeInfo.has("subtitle")){
                             title = title + ". " + volumeInfo.getString("subtitle");
                         }
-                        // Log.v("Title",title);
 
                         // Extract out the authors
                         ArrayList<String> authorsList = new ArrayList<String>();
@@ -237,20 +226,7 @@ public class BookListing extends AppCompatActivity {
                             JSONArray authors = volumeInfo.getJSONArray("authors");
                             authorsList.add(authors.getString(0));
 
-                        } else {
-
-                            authorsList.add("No author mentioned");
-
-                        }
-
-
-/*                        for(int j=0; i< authors.length(); i++) {
-
-
-                            authorsList.add(authors.getString(j));
-                            Log.v("Auhtorcounter",Integer.toString(j));
-                            Log.v("Authorlist",authors.getString(j));
-                        }*/
+                        } else {authorsList.add("No author mentioned");}
 
                         bookList.add(new Book(title,authorsList));
 
@@ -271,7 +247,6 @@ public class BookListing extends AppCompatActivity {
     private String formUrlString(String string) {
 
         String formatedString = string.replaceAll(" ", "+");
-
         return formatedString;
 
     }

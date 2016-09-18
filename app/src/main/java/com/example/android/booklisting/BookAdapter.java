@@ -44,8 +44,6 @@ public class BookAdapter extends ArrayAdapter<Book> {
         TextView authorTextView = (TextView) listItemView.findViewById(R.id.authors);
         authorTextView.setText(joinAuthors(currentBook.getMauthors()));
 
-        // Log.v("Authors", joinAuthors(currentBook.getMauthors()));
-
         return listItemView;
     }
 
