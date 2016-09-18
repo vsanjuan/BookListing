@@ -10,6 +10,8 @@
     android:orientation="vertical"
     tools:context="com.example.android.booklisting.MainActivity">
 
+
+
     <EditText
         android:id="@+id/search_string"
         android:layout_width="match_parent"
